@@ -7,6 +7,9 @@ exports.reviewWithdrawalRequest = exports.getAllWithdrawalRequestsForAdmin = exp
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 const withdrawalRequest_model_1 = __importDefault(require("../models/withdrawalRequest.model"));
+const wallet_model_1 = __importDefault(require("../models/wallet.model"));
+const topup_model_1 = __importDefault(require("../models/topup.model"));
+const notification_model_1 = __importDefault(require("../models/notification.model"));
 const normalizeAmount = (raw) => Number(raw);
 const createWithdrawalRequest = async (req, res) => {
     const userId = req.user?.userId;
@@ -53,6 +56,20 @@ const createWithdrawalRequest = async (req, res) => {
         ], { session });
         await session.commitTransaction();
         session.endSession();
+        // Create notifications for all admin users
+        try {
+            const admins = await user_model_1.default.find({ role: "admin" });
+            for (const admin of admins) {
+                await notification_model_1.default.create({
+                    userId: admin.userId,
+                    title: "Yêu cầu rút tiền mới",
+                    message: `Creator ${user.displayName || user.email} đã yêu cầu rút ${parsedAmount.toLocaleString("vi-VN")}đ.`
+                });
+            }
+        }
+        catch (err) {
+            console.error("Failed to notify admins about withdrawal request:", err);
+        }
         return res.status(201).json({
             success: true,
             message: "Tạo yêu cầu rút tiền thành công",
@@ -83,8 +100,41 @@ const getMyWithdrawalRequests = async (req, res) => {
 exports.getMyWithdrawalRequests = getMyWithdrawalRequests;
 const getAllWithdrawalRequestsForAdmin = async (_req, res) => {
     try {
-        const data = await withdrawalRequest_model_1.default.find().sort({ createdAt: -1 });
-        return res.status(200).json({ success: true, data });
+        const rawWithdrawals = await withdrawalRequest_model_1.default.find().sort({ createdAt: -1 });
+        const withdrawals = await Promise.all(rawWithdrawals.map(async (w) => {
+            const user = await user_model_1.default.findOne({ userId: w.userId }).select('displayName email image').lean();
+            return {
+                ...w.toObject(),
+                user: user ? {
+                    displayName: user.displayName,
+                    email: user.email,
+                    image: user.image
+                } : null
+            };
+        }));
+        const rawDeposits = await topup_model_1.default.find({ bookingId: { $regex: /^topup_/ } }).sort({ createdAt: -1 });
+        const deposits = await Promise.all(rawDeposits.map(async (t) => {
+            const user = await user_model_1.default.findOne({ userId: t.userId }).select('displayName email').lean();
+            return {
+                _id: t._id,
+                bookingId: t.bookingId,
+                orderCode: t.orderCode,
+                userId: t.userId,
+                displayName: user?.displayName || 'N/A',
+                email: user?.email || 'N/A',
+                amount: t.amount,
+                pointsEarned: Math.floor(t.amount / 1000),
+                status: t.status,
+                createdAt: t.createdAt,
+            };
+        }));
+        const adminWallet = await wallet_model_1.default.findOne({ isSystem: true });
+        return res.status(200).json({
+            success: true,
+            data: withdrawals,
+            deposits,
+            systemWalletBalance: adminWallet?.balance || 0
+        });
     }
     catch (error) {
         return res.status(500).json({ success: false, message: error.message || "Không thể tải danh sách yêu cầu" });
@@ -114,7 +164,23 @@ const reviewWithdrawalRequest = async (req, res) => {
         }
         request.status = decision;
         request.adminNote = adminNote;
-        if (decision === "rejected") {
+        if (decision === "approved") {
+            let adminWallet = await wallet_model_1.default.findOne({ isSystem: true }).session(session);
+            if (!adminWallet) {
+                adminWallet = new wallet_model_1.default({ isSystem: true, balance: 0 });
+            }
+            if (adminWallet.balance < request.amount) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(400).json({
+                    success: false,
+                    message: `Số dư ví hệ thống không đủ để duyệt yêu cầu rút tiền này (Yêu cầu: ${request.amount.toLocaleString()} VND, Hiện có: ${adminWallet.balance.toLocaleString()} VND)`
+                });
+            }
+            adminWallet.balance -= request.amount;
+            await adminWallet.save({ session });
+        }
+        else if (decision === "rejected") {
             await user_model_1.default.findOneAndUpdate({ userId: request.userId }, { $inc: { balance: request.amount } }, { session });
         }
         await request.save({ session });

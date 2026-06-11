@@ -18,53 +18,17 @@ import {
   Clock,
   Menu,
   X,
-  Award
+  Download
 } from 'lucide-react';
+import qrCodeImg from '../assets/qr-code.png';
+import logoImg from '../assets/logo.png';
 
-const QRCodeSVG = () => (
-  <svg width="120" height="120" viewBox="0 0 120 120" className="w-full h-full text-slate-800">
-    <rect width="120" height="120" fill="white" rx="12" />
-    {/* QR code outer frame corners */}
-    <rect x="12" y="12" width="28" height="28" fill="currentColor" rx="4" />
-    <rect x="16" y="16" width="20" height="20" fill="white" rx="2" />
-    <rect x="20" y="20" width="12" height="12" fill="currentColor" rx="1" />
-
-    <rect x="80" y="12" width="28" height="28" fill="currentColor" rx="4" />
-    <rect x="84" y="16" width="20" height="20" fill="white" rx="2" />
-    <rect x="88" y="20" width="12" height="12" fill="currentColor" rx="1" />
-
-    <rect x="12" y="80" width="28" height="28" fill="currentColor" rx="4" />
-    <rect x="16" y="84" width="20" height="20" fill="white" rx="2" />
-    <rect x="20" y="88" width="12" height="12" fill="currentColor" rx="1" />
-
-    {/* Small alignment pattern */}
-    <rect x="84" y="84" width="16" height="16" fill="currentColor" rx="2" />
-    <rect x="89" y="89" width="6" height="6" fill="white" rx="1" />
-
-    {/* Random bits */}
-    <rect x="48" y="12" width="8" height="16" fill="currentColor" rx="1" />
-    <rect x="60" y="16" width="12" height="8" fill="currentColor" rx="1" />
-    <rect x="48" y="32" width="20" height="8" fill="currentColor" rx="1" />
-    <rect x="72" y="24" width="4" height="20" fill="currentColor" rx="1" />
-    
-    <rect x="12" y="48" width="16" height="8" fill="currentColor" rx="1" />
-    <rect x="20" y="60" width="8" height="12" fill="currentColor" rx="1" />
-    <rect x="36" y="52" width="12" height="8" fill="currentColor" rx="1" />
-    
-    <rect x="80" y="48" width="24" height="8" fill="currentColor" rx="1" />
-    <rect x="92" y="60" width="8" height="16" fill="currentColor" rx="1" />
-    <rect x="104" y="52" width="4" height="20" fill="currentColor" rx="1" />
-
-    <rect x="48" y="80" width="16" height="8" fill="currentColor" rx="1" />
-    <rect x="56" y="92" width="8" height="16" fill="currentColor" rx="1" />
-    <rect x="44" y="104" width="24" height="4" fill="currentColor" rx="1" />
-    <rect x="72" y="100" width="8" height="12" fill="currentColor" rx="1" />
-
-    {/* Center logo background & icon */}
-    <rect x="46" y="46" width="28" height="28" fill="white" rx="6" className="shadow-md" />
-    <rect x="50" y="50" width="20" height="20" fill="#10b981" rx="4" /> {/* emerald-500 */}
-    <path d="M56 64v-6h8v6h-8zM60 54l-5 4h10l-5-4z" fill="white" />
-  </svg>
+const QRCodeImg = ({ className = "w-full h-full object-contain rounded-lg" }: { className?: string }) => (
+  <img 
+    src={qrCodeImg} 
+    alt="QR Code" 
+    className={className}
+  />
 );
 
 const AppStoreBadge = () => (
@@ -99,6 +63,21 @@ const GooglePlayBadge = () => (
   </a>
 );
 
+const ExpoBuildBadge = () => (
+  <a 
+    href="https://expo.dev/accounts/khoale3004/projects/owntrip/builds/36906c47-0020-45b8-bfbb-11186dee3365" 
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-3 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 border border-emerald-500 duration-200"
+  >
+    <Download className="w-6 h-6 text-white" />
+    <div className="text-left leading-none">
+      <p className="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">Tải bản thử nghiệm</p>
+      <p className="text-sm font-semibold mt-1 font-sans">Expo EAS Build</p>
+    </div>
+  </a>
+);
+
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -119,9 +98,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-emerald-500 selection:text-white relative font-sans">
-      {/* Background Blobs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-emerald-200/30 to-teal-200/30 blur-[130px] -z-10 pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-blue-200/20 to-emerald-200/20 blur-[130px] -z-10 pointer-events-none"></div>
+      {/* Background Blobs Wrapper */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-emerald-200/30 to-teal-200/30 blur-[130px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-tr from-blue-200/20 to-emerald-200/20 blur-[130px]"></div>
+      </div>
 
       {/* STICKY HEADER */}
       <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/75 border-b border-slate-100/80 transition-all duration-300">
@@ -129,12 +110,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/25">
-                <Hotel className="w-5 h-5" />
-              </div>
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-800 bg-clip-text text-transparent tracking-tight">
-                Owntrip
-              </span>
+              <img src={logoImg} alt="Owntrip Logo" className="h-10 sm:h-12 object-contain" />
             </div>
 
             {/* Desktop Navigation Links */}
@@ -261,11 +237,11 @@ export default function Home() {
 
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-none sm:leading-[1.1]">
-                Đặt phòng dễ dàng <br />
-                Đồng hành mọi <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Chuyến Đi</span>
+                Tự lập kế hoạch <br />
+                Làm chủ mọi <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Chuyến Đi</span>
               </h1>
               <p className="text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Tải ngay ứng dụng di động Owntrip. Khám phá hàng ngàn phòng khách sạn chất lượng tốt, homestay xinh xắn với mức giá cực kỳ ưu đãi và quản lý lịch trình trong tầm tay.
+                Tải ngay ứng dụng di động Owntrip. Công cụ thiết lập lịch trình du lịch thông minh, giúp bạn tự tạo kế hoạch chi tiết, đặt phòng khách sạn nhanh chóng và làm chủ trọn vẹn hành trình.
               </p>
             </div>
 
@@ -289,8 +265,8 @@ export default function Home() {
 
             {/* QR + Store Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-8 bg-white/40 border border-slate-100 rounded-3xl p-6 backdrop-blur-sm max-w-xl mx-auto lg:mx-0 shadow-sm">
-              <div className="flex-shrink-0 bg-white p-3 rounded-2xl shadow-md border border-slate-100 flex items-center justify-center group relative overflow-hidden transition-all duration-300 hover:scale-[1.02]">
-                <QRCodeSVG />
+              <div className="w-36 h-36 flex-shrink-0 bg-white p-3 rounded-2xl shadow-md border border-slate-100 flex items-center justify-center group relative overflow-hidden transition-all duration-300 hover:scale-[1.02]">
+                <QRCodeImg />
               </div>
               
               <div className="space-y-4 text-center sm:text-left flex-1">
@@ -301,6 +277,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
                   <AppStoreBadge />
                   <GooglePlayBadge />
+                  <ExpoBuildBadge />
                 </div>
               </div>
             </div>
@@ -649,7 +626,7 @@ export default function Home() {
               Mọi thứ bạn cần cho một chuyến đi trọn vẹn
             </p>
             <p className="text-base text-slate-500">
-              Được thiết kế để tối ưu hóa trải nghiệm tìm kiếm, lựa chọn phòng và quản lý đặt phòng một cách trơn tru, hiện đại.
+              Được thiết kế để tối ưu hóa trải nghiệm tự lên lịch trình, thiết lập kế hoạch và đặt các dịch vụ du lịch một cách trơn tru, hiện đại.
             </p>
           </div>
 
@@ -657,12 +634,12 @@ export default function Home() {
             {/* Feature 1 */}
             <div className="p-8 bg-slate-50 hover:bg-slate-50/50 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 rounded-3xl border border-transparent hover:border-slate-100 flex flex-col gap-6">
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-inner">
-                <Search className="w-6 h-6" />
+                <Compass className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Tìm kiếm phòng thông minh</h3>
+                <h3 className="text-lg font-bold text-slate-900">Lập kế hoạch thông minh</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Lọc phòng theo địa điểm, mức giá, số sao, tiện ích (hồ bơi, wifi, bữa sáng free...) dễ dàng và nhanh chóng trong nháy mắt.
+                  Tự tạo lộ trình chi tiết từng ngày, quản lý điểm đến, ẩm thực, vui chơi và tối ưu đường đi cực kỳ dễ dàng.
                 </p>
               </div>
             </div>
@@ -670,12 +647,12 @@ export default function Home() {
             {/* Feature 2 */}
             <div className="p-8 bg-slate-50 hover:bg-slate-50/50 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 rounded-3xl border border-transparent hover:border-slate-100 flex flex-col gap-6">
               <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center text-teal-700 shadow-inner">
-                <Percent className="w-6 h-6" />
+                <Hotel className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Ưu đãi độc quyền App</h3>
+                <h3 className="text-lg font-bold text-slate-900">Đặt phòng & dịch vụ nhanh chóng</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Nhận các mã giảm giá Flashsale theo khung giờ vàng và voucher đặc quyền thành viên khi hoàn thành đặt phòng lần đầu.
+                  Tích hợp đặt phòng khách sạn chất lượng tốt, homestay xinh xắn ngay trên lộ trình chuyến đi của bạn với giá ưu đãi.
                 </p>
               </div>
             </div>
@@ -683,12 +660,12 @@ export default function Home() {
             {/* Feature 3 */}
             <div className="p-8 bg-slate-50 hover:bg-slate-50/50 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 rounded-3xl border border-transparent hover:border-slate-100 flex flex-col gap-6">
               <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700 shadow-inner">
-                <ShieldCheck className="w-6 h-6" />
+                <Percent className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Thanh toán bảo mật, đa dạng</h3>
+                <h3 className="text-lg font-bold text-slate-900">Ưu đãi độc quyền App</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Hỗ trợ thanh toán nhanh qua MoMo, ZaloPay, chuyển khoản ngân hàng qua mã QR và thẻ thanh toán quốc tế Visa/Mastercard.
+                  Nhận mã giảm giá và voucher đặc quyền thành viên ngay sau khi tạo và hoàn thành kế hoạch chuyến đi của bạn.
                 </p>
               </div>
             </div>
@@ -699,9 +676,9 @@ export default function Home() {
                 <Clock className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Thông báo thời gian thực</h3>
+                <h3 className="text-lg font-bold text-slate-900">Đồng hành thời gian thực</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Cập nhật ngay tức thời trạng thái phòng (đã xác nhận, chuẩn bị phòng) và thông tin giờ giấc check-in, check-out từ khách sạn.
+                  Cập nhật nhắc nhở thời gian lịch trình, thông báo điểm đến tiếp theo và giờ check-in, check-out từ khách sạn.
                 </p>
               </div>
             </div>
@@ -712,9 +689,9 @@ export default function Home() {
                 <Map className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Hành trình thông minh</h3>
+                <h3 className="text-lg font-bold text-slate-900">Bản đồ & Gợi ý điểm đến</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Tích hợp bản đồ dẫn đường trực quan, gợi ý các nhà hàng, quán cafe, điểm du lịch hot gần khách sạn bạn chọn lưu trú.
+                  Tích hợp bản đồ trực quan gợi ý các nhà hàng, quán cafe, điểm tham quan hot nhất dọc theo hành trình của bạn.
                 </p>
               </div>
             </div>
@@ -722,12 +699,12 @@ export default function Home() {
             {/* Feature 6 */}
             <div className="p-8 bg-slate-50 hover:bg-slate-50/50 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 rounded-3xl border border-transparent hover:border-slate-100 flex flex-col gap-6">
               <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-700 shadow-inner">
-                <Award className="w-6 h-6" />
+                <Sparkles className="w-6 h-6" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-bold text-slate-900">Tích lũy điểm Owntrip</h3>
+                <h3 className="text-lg font-bold text-slate-900">Chia sẻ & Tương tác nhóm</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">
-                  Mỗi lần đặt phòng thành công, bạn sẽ nhận được điểm thưởng để thăng hạng thành viên và đổi các phần quà/đêm nghỉ miễn phí.
+                  Dễ dàng chia sẻ kế hoạch hành trình cho bạn bè, người thân hoặc mời họ cùng tham gia thiết kế lịch trình nhóm.
                 </p>
               </div>
             </div>
@@ -786,9 +763,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 text-base">Đăng ký & Nhận voucher chào mừng</h4>
+                    <h4 className="font-bold text-slate-900 text-base">Lập kế hoạch & Nhận voucher chào mừng</h4>
                     <p className="text-sm text-slate-500 mt-1">
-                      Mở ứng dụng, tạo tài khoản mới bằng Email/Số điện thoại để được nhận ngay Voucher giảm 50% cho lần đặt phòng đầu tiên!
+                      Tạo tài khoản mới, lên lịch trình chuyến đi đầu tiên và nhận ngay ưu đãi đặt phòng đặc quyền chào mừng thành viên mới!
                     </p>
                   </div>
                 </div>
@@ -806,12 +783,13 @@ export default function Home() {
 
               {/* Huge QR Code Box */}
               <div className="w-48 h-48 bg-slate-50 rounded-2xl p-4 mx-auto flex items-center justify-center border border-slate-100 shadow-inner group">
-                <QRCodeSVG />
+                <QRCodeImg />
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-wrap gap-4 justify-center items-center">
                 <AppStoreBadge />
                 <GooglePlayBadge />
+                <ExpoBuildBadge />
               </div>
 
               <p className="text-xs text-slate-400">Phiên bản hiện tại: v2.4.0 • Cập nhật gần nhất: Hôm qua</p>
@@ -829,8 +807,8 @@ export default function Home() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-teal-500/10 blur-3xl pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
-            <Hotel className="w-8 h-8 text-white" />
+          <div className="w-20 h-20 rounded-2xl bg-white p-2 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+            <img src={logoImg} alt="Owntrip Logo" className="w-full h-full object-contain" />
           </div>
           <div className="space-y-4">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
@@ -883,13 +861,10 @@ export default function Home() {
           <div className="grid md:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-5 space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-md">
-                  <Hotel className="w-4 h-4" />
-                </div>
-                <span className="text-lg font-bold text-white tracking-tight">Owntrip</span>
+                <img src={logoImg} alt="Owntrip Logo" className="h-10 object-contain bg-white p-1 rounded-lg" />
               </div>
               <p className="text-sm text-slate-500 leading-relaxed max-w-sm">
-                Owntrip là nền tảng đặt phòng khách sạn và dịch vụ du lịch trực tuyến hàng đầu Việt Nam. Chúng tôi kết nối hàng ngàn du khách với các điểm lưu trú tuyệt vời nhất.
+                Owntrip là nền tảng lập kế hoạch du lịch thông minh và đặt phòng trực tuyến hàng đầu. Chúng tôi giúp bạn dễ dàng tự thiết kế lịch trình hành trình và kết nối với các điểm lưu trú tuyệt vời nhất.
               </p>
             </div>
 

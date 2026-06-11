@@ -569,12 +569,21 @@ export const PaymentController = {
         const hotel = await Hotel.findOne({ hotelId });
         const hotelName = hotel?.name || 'khách sạn';
 
-        // Tạo thông báo trong app
+        // Tạo thông báo trong app cho khách hàng
         await Notification.create({
           userId,
           title: "✅ Đặt phòng thành công",
           message: `Bạn đã đặt thành công ${roomCount} phòng tại ${hotelName} (${nights} đêm). Số tiền ${totalPrice.toLocaleString()} VND đã được trừ từ số dư.`,
         });
+
+        // Tạo thông báo cho chủ khách sạn
+        if (hotel && hotel.ownerId) {
+          await Notification.create({
+            userId: hotel.ownerId,
+            title: "🔔 Đơn đặt phòng mới",
+            message: `Khách sạn ${hotelName} có đơn đặt phòng mới (${newBooking.bookingId}) trị giá ${totalPrice.toLocaleString()} VND.`,
+          });
+        }
 
         if (hotel && guestInfo.email) {
           sendEmailTemplate(
@@ -687,13 +696,21 @@ export const PaymentController = {
     // Cộng doanh thu cho chủ khách sạn
     const hotel = await Hotel.findOne({ hotelId: booking.hotelId });
     
-    // Tạo thông báo trong app
+    // Tạo thông báo trong app cho khách hàng
     await Notification.create({
       userId: booking.userId,
       title: "✅ Thanh toán thành công",
       message: `Đơn đặt phòng ${booking.bookingId} tại ${hotel?.name || 'khách sạn'} đã được thanh toán thành công qua PayOS.`,
     });
 
+    // Tạo thông báo cho chủ khách sạn
+    if (hotel && hotel.ownerId) {
+      await Notification.create({
+        userId: hotel.ownerId,
+        title: "🔔 Đơn đặt phòng mới",
+        message: `Khách sạn ${hotel.name} có đơn đặt phòng mới (${booking.bookingId}) trị giá ${booking.totalPrice.toLocaleString()} VND.`,
+      });
+    }
 
     if (hotel && hotel.ownerId) {
       const rates = await getCommissionRates();
@@ -774,6 +791,14 @@ export const PaymentController = {
         { userId: topup.userId },
         { $inc: { balance: topup.amount } }
       );
+
+      // Add to admin/system wallet
+      let adminWallet = await Wallet.findOne({ isSystem: true });
+      if (!adminWallet) {
+        adminWallet = new Wallet({ isSystem: true, balance: 0 });
+      }
+      adminWallet.balance += topup.amount;
+      await adminWallet.save();
     } else if (topup.bookingId.startsWith('temp_') && topup.hotelId) {
       // Trường hợp gia hạn phòng (Edit stay): Chuyển tiền cho chủ khách sạn
       const hotel = await Hotel.findOne({ $or: [{ hotelId: topup.hotelId }, { _id: topup.hotelId }] });
