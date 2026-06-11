@@ -4,10 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmailTemplate = void 0;
-const resend_1 = require("resend");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+const nodemailer_1 = __importDefault(require("nodemailer"));
+// Function to create a fresh transporter using the latest process.env
+const getTransporter = () => {
+    return nodemailer_1.default.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+};
 const sendEmailTemplate = async (to, subject, templateName, variables) => {
     try {
         // Validate email format
@@ -16,18 +23,36 @@ const sendEmailTemplate = async (to, subject, templateName, variables) => {
             console.error(`❌ Invalid email address: ${to}`);
             throw new Error(`Invalid email address: ${to}`);
         }
-        const templatePath = path_1.default.join(__dirname, 'templates', `${templateName}.html`);
-        let htmlContent = fs_1.default.readFileSync(templatePath, 'utf8');
+        let htmlContent = `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Xác thực tài khoản</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f7f9fc; padding: 20px;">
+  <div style="max-width: 500px; margin: auto; background: white; border-radius: 10px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="color: #2b6cb0; text-align: center;">Xin chào {{DISPLAY_NAME}}</h2>
+    <p>Mã OTP xác thực của bạn là:</p>
+    <h1 style="text-align: center; color: #2b6cb0;">{{OTP_CODE}}</h1>
+    <p style="text-align: center;">Mã này sẽ hết hạn sau 5 phút.</p>
+    <hr />
+    <p style="font-size: 12px; color: #999; text-align: center;">
+      © 2026 Your App. All rights reserved.
+    </p>
+  </div>
+</body>
+</html>`;
         for (const [key, value] of Object.entries(variables)) {
             htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), value);
         }
-        const result = await resend.emails.send({
-            from: 'Acme <onboarding@resend.dev>',
+        const info = await getTransporter().sendMail({
+            from: `"Owntrip Support" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html: htmlContent,
         });
-        console.log(`📧 Email (${templateName}) sent to ${to}`);
+        console.log(`📧 Email (${templateName}) sent to ${to} (MessageId: ${info.messageId})`);
         return true;
     }
     catch (error) {
