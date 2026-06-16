@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Plus, Edit2, Trash2, Loader2, XCircle, AlertTriangle,
-  Eye, EyeOff, Search, MapPin, Award, Image, Calendar,
-  Coins, Target, Check, CheckCircle2, ChevronRight, Tag,
+  Eye, EyeOff, Search, MapPin, Image, Calendar,
+  Coins, Target, Check, ChevronRight, Tag,
   Upload, ChevronLeft, Clock
 } from 'lucide-react';
 import api from '../lib/axios';
