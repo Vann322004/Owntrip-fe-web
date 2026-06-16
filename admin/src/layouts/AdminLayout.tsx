@@ -12,7 +12,8 @@ import {
   ClipboardList,
   Package,
   CreditCard,
-  Image
+  Image,
+  Trophy
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '../lib/utils';
@@ -25,6 +26,7 @@ const navItems = [
   { name: 'Khách sạn', path: '/hotels', icon: Map },
   { name: 'Avatar Shop', path: '/avatar-shop', icon: Sparkles },
   { name: 'Khung hình', path: '/frames', icon: Image },
+  { name: 'Nhiệm vụ', path: '/missions', icon: Trophy },
   { name: 'Gói Creator', path: '/creator-packages', icon: Package },
   { name: 'Đơn Đăng kí đối tác', path: '/hotel-requests', icon: ClipboardList },
   { name: 'Quản lý Giao dịch', path: '/withdrawals', icon: CreditCard },
