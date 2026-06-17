@@ -31,7 +31,7 @@ const QRCodeImg = ({ className = "w-full h-full object-contain rounded-lg" }: { 
 
 const ExpoBuildBadge = () => (
   <a 
-    href="https://expo.dev/accounts/khoale3004/projects/owntrip/builds/36906c47-0020-45b8-bfbb-11186dee3365" 
+    href="https://expo.dev/accounts/khoale3004/projects/owntrip/builds/c448dba6-935b-4bf4-998e-278ce11ec29a" 
     target="_blank"
     rel="noopener noreferrer"
     className="flex items-center gap-3 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 border border-emerald-500 duration-200"
@@ -270,14 +270,14 @@ export default function Home() {
 
               
               {/* Phone Mockup */}
-              <div className="w-[300px] h-[646px] bg-slate-950 rounded-[48px] p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-transform duration-700">
+              <div className="w-[260px] h-[560px] lg:w-[280px] lg:h-[600px] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-transform duration-700">
                 
                 {/* Volume / Power Buttons */}
                 <div className="absolute left-[-6px] top-28 w-[6px] h-10 bg-slate-900 rounded-l-md"></div>
                 <div className="absolute left-[-6px] top-40 w-[6px] h-14 bg-slate-900 rounded-l-md"></div>
                 <div className="absolute right-[-6px] top-32 w-[6px] h-16 bg-slate-900 rounded-r-md"></div>
 
-                <div className="w-full h-full rounded-[38px] overflow-hidden bg-white relative">
+                <div className="w-full h-full rounded-[32px] lg:rounded-[38px] overflow-hidden bg-white relative">
                   <img src={activeScreen} alt="Travel App Preview" className="w-full h-full object-cover object-top transition-opacity duration-300" />
 
                   {/* Bottom Nav */}
@@ -318,18 +318,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              
-              {/* Floating Element */}
-              <div className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-white/50 z-20 flex items-center gap-3 animate-bounce" style={{animationDuration: '3s'}}>
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-400 flex items-center justify-center text-white shadow-inner">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-medium">Lên lịch trình tự động</p>
-                  <p className="text-sm font-black text-slate-900">Nhanh chóng & Tiện lợi</p>
-                </div>
-              </div>
-
             </div>
 
           </div>
@@ -383,11 +371,11 @@ export default function Home() {
             </div>
 
             {/* Right: Phone Mockup (Checkin) */}
-            <div className="relative flex justify-center lg:justify-end reveal reveal-delay-200">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000"></div>
-              <div className="w-[300px] h-[646px] bg-slate-950 rounded-[48px] p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10">
+            <div className="relative flex justify-center lg:justify-end reveal reveal-delay-200 mt-12 lg:mt-0">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 lg:w-96 lg:h-96 bg-emerald-100/50 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000"></div>
+              <div className="w-[260px] h-[560px] lg:w-[280px] lg:h-[600px] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10">
                 {/* Screen */}
-                <div className="w-full h-full rounded-[38px] overflow-hidden bg-white relative">
+                <div className="w-full h-full rounded-[32px] lg:rounded-[38px] overflow-hidden bg-white relative">
                   <img src="/checkin.png" alt="Checkin Frame" className="w-full h-full object-cover object-[15%_top]" />
                 </div>
               </div>
