@@ -11,7 +11,10 @@ import {
   ArrowRight,
   Menu,
   X,
-  Download
+  Download,
+  Home as HomeIcon,
+  Map,
+  ShoppingBag
 } from 'lucide-react';
 import qrCodeImg from '../assets/qr-code.png';
 import logoImg from '../assets/logo.png';
@@ -45,6 +48,15 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeScreen, setActiveScreen] = useState('/home.png');
+
+  const screens = [
+    { id: 'tong_quan', name: 'Khám phá', icon: HomeIcon, image: '/home.png' },
+    { id: 'plan', name: 'Lịch trình', icon: Map, image: '/plan.png' },
+    { id: 'check_in', name: 'Check-in', icon: MapPin, image: '/checkin.png' },
+    { id: 'nhat_ki', name: 'Nhật ký', icon: Star, image: '/nhat_ki.png' },
+    { id: 'cua_hang', name: 'Cửa hàng', icon: ShoppingBag, image: '/cua_hang.png' },
+  ];
   // Scroll Animation Observer
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -266,7 +278,44 @@ export default function Home() {
                 <div className="absolute right-[-6px] top-32 w-[6px] h-16 bg-slate-900 rounded-r-md"></div>
 
                 <div className="w-full h-full rounded-[38px] overflow-hidden bg-white relative">
-                  <img src="/home.png" alt="Travel App Preview" className="w-full h-full object-cover object-top" />
+                  <img src={activeScreen} alt="Travel App Preview" className="w-full h-full object-cover object-top transition-opacity duration-300" />
+
+                  {/* Bottom Nav */}
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-white/50 backdrop-blur-md p-2">
+                    <div className="flex justify-around items-center h-full w-full">
+                      {screens.slice(0, 2).map((screen) => (
+                        <button
+                          key={screen.id}
+                          onClick={() => setActiveScreen(screen.image)}
+                          className="flex flex-col items-center justify-center gap-1 w-1/5"
+                        >
+                          <screen.icon className={`w-5 h-5 ${activeScreen === screen.image ? 'text-emerald-600' : 'text-slate-500'}`} />
+                          <span className={`text-[10px] font-bold ${activeScreen === screen.image ? 'text-emerald-700' : 'text-slate-600'}`}>{screen.name}</span>
+                        </button>
+                      ))}
+
+                      <div className="w-1/5 text-center">
+                        <button
+                          onClick={() => setActiveScreen('/checkin.png')}
+                          className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white/80 relative -top-6"
+                        >
+                          <MapPin className="w-7 h-7" />
+                        </button>
+                        <span className="text-[10px] font-bold text-emerald-700 relative -top-6">Check-in</span>
+                      </div>
+
+                      {screens.slice(3, 5).map((screen) => (
+                        <button
+                          key={screen.id}
+                          onClick={() => setActiveScreen(screen.image)}
+                          className="flex flex-col items-center justify-center gap-1 w-1/5"
+                        >
+                          <screen.icon className={`w-5 h-5 ${activeScreen === screen.image ? 'text-emerald-600' : 'text-slate-500'}`} />
+                          <span className={`text-[10px] font-bold ${activeScreen === screen.image ? 'text-emerald-700' : 'text-slate-600'}`}>{screen.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -525,9 +574,9 @@ export default function Home() {
                     1
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 text-base">Quét mã QR hoặc Nhấn link tải</h4>
+                    <h4 className="font-bold text-slate-900 text-base">Quét mã QR hoặc nhấn nút tải</h4>
                     <p className="text-sm text-slate-500 mt-1">
-                      Mở ứng dụng Camera trên điện thoại và quét mã QR ở phía trên, hoặc nhấn trực tiếp vào nút tải App Store / Google Play.
+                      Mở ứng dụng Camera trên điện thoại và quét mã QR ở phía trên, hoặc nhấn trực tiếp vào nút tải bên dưới.
                     </p>
                   </div>
                 </div>
