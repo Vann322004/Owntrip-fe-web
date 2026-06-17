@@ -219,7 +219,7 @@ export default function Home() {
             <div className="text-left space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="inline-block">
                 <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider border border-emerald-200 shadow-sm flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" /> Ứng dụng du lịch số 1
+                  <Sparkles className="w-4 h-4" /> Ứng Dụng du Lịch Tiện Ích
                 </span>
               </div>
               
