@@ -8,8 +8,8 @@ const path = require('path');
  * 3. Chạy lệnh: node filter.js
  */
 
-const INPUT_FILE = path.join(__dirname, 'Gia_Lai.json');
-const OUTPUT_FILE = path.join(__dirname, 'Gia_Lai_clean.json');
+const INPUT_FILE = path.join(__dirname, 'cao_bang.json');
+const OUTPUT_FILE = path.join(__dirname, 'cao_bang_clean.json');
 
 
 const TRANSLATIONS = {
@@ -87,13 +87,22 @@ try {
   console.log(`📊 Đang xử lý ${rawData.length} địa điểm...`);
 
   const cleanData = rawData.map(item => {
-    // A. NHẬN DIỆN THÀNH PHỐ TỪ ĐỊA CHỈ
+    // A. NHẬN DIỆN THÀNH PHỐ TỪ ĐỊA CHỈ DYNAMICALLY
     let cityDetected = "Khác";
-    const addr = (item.address || "").toLowerCase();
-    if (addr.includes("đà nẵng")) cityDetected = "Da Nang";
-    else if (addr.includes("hồ chí minh") || addr.includes("saigon") || addr.includes("an khánh") || addr.includes("quận")) cityDetected = "Ho Chi Minh";
-    else if (addr.includes("hà nội")) cityDetected = "Ha Noi";
-    else if (addr.includes("đà lạt") || addr.includes("lâm đồng") || addr.includes("xuan huong")) cityDetected = "Da Lat";
+    if (item.address) {
+      const parts = item.address.split(',').map(p => p.trim());
+      if (parts.length > 1) {
+        if (parts[parts.length - 1].toLowerCase() === 'vietnam' || parts[parts.length - 1].toLowerCase() === 'việt nam') {
+          cityDetected = parts[parts.length - 2];
+        } else {
+          cityDetected = parts[parts.length - 1];
+        }
+      } else {
+        cityDetected = parts[0];
+      }
+      // Loại bỏ các mã bưu điện (vd: "Thanh Hóa 40100" -> "Thanh Hóa")
+      cityDetected = cityDetected.replace(/\d+/g, '').trim() || "Khác";
+    }
 
     // B. XỬ LÝ PREFERENCES & DỊCH THUẬT
     const rawPrefs = new Set();

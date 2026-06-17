@@ -57,7 +57,6 @@ export default function Home() {
     { id: 'nhat_ki', name: 'Nhật ký', icon: Star, image: '/nhat_ki.png' },
     { id: 'cua_hang', name: 'Cửa hàng', icon: ShoppingBag, image: '/cua_hang.png' },
   ];
-
   // Scroll Animation Observer
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
