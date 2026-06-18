@@ -141,14 +141,22 @@ export default function Home() {
 
               
               {/* Phone Mockup */}
-              <div className="w-[260px] lg:w-[280px] aspect-[403/908] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-transform duration-700">
+              <div 
+                className="w-[260px] lg:w-[280px] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-all duration-500"
+                style={{
+                  aspectRatio: activeScreen === '/home.png' ? '403/908' :
+                               activeScreen === '/plan.png' ? '398/858' :
+                               activeScreen === '/checkin.png' ? '425/789' :
+                               activeScreen === '/nhat_ki.png' ? '401/803' : '414/860'
+                }}
+              >
                 
                 {/* Volume / Power Buttons */}
                 <div className="absolute left-[-6px] top-28 w-[6px] h-10 bg-slate-900 rounded-l-md"></div>
                 <div className="absolute left-[-6px] top-40 w-[6px] h-14 bg-slate-900 rounded-l-md"></div>
                 <div className="absolute right-[-6px] top-32 w-[6px] h-16 bg-slate-900 rounded-r-md"></div>
 
-                <div className="w-full h-full rounded-[32px] lg:rounded-[38px] overflow-hidden bg-white relative">
+                <div className="w-full h-full rounded-[24px] lg:rounded-[28px] overflow-hidden bg-white relative">
                   <img src={activeScreen} alt="Travel App Preview" className="w-full h-full object-cover object-top transition-opacity duration-300" />
 
                   {/* Bottom Nav */}
