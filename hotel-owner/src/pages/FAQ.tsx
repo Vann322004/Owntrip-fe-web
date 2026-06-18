@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, MessageCircle, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronDown, MessageCircle } from 'lucide-react';
 import Header from '../components/Header';
 
 type FAQItem = {

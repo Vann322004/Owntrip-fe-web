@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
-  ChevronRight, 
   Star, 
   ShieldCheck, 
   Percent, 
   MapPin, 
   Sparkles,
   ArrowRight,
-  Menu,
-  X,
   Download,
   Home as HomeIcon,
   Map,
