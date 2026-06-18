@@ -19,6 +19,7 @@ import {
 import qrCodeImg from '../assets/qr-code.png';
 import logoImg from '../assets/logo.png';
 import Chatbot from '../components/Chatbot';
+import Header from '../components/Header';
 
 const QRCodeImg = ({ className = "w-full h-full object-contain rounded-lg" }: { className?: string }) => (
   <img 
@@ -47,7 +48,6 @@ const ExpoBuildBadge = () => (
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeScreen, setActiveScreen] = useState('/home.png');
 
   const screens = [
@@ -82,133 +82,7 @@ export default function Home() {
         <div className="absolute inset-x-0 top-0 h-96 bg-gradient-to-b from-slate-200/40 to-transparent"></div>
       </div>
 
-      {/* STICKY HEADER */}
-      <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/75 border-b border-slate-100/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Logo */}
-            <div className="flex items-center gap-2 group cursor-pointer animate-float">
-              <img src={logoImg} alt="Owntrip Logo" className="h-16 sm:h-20 object-contain drop-shadow-md group-hover:scale-105 group-hover:drop-shadow-xl transition-all duration-300" />
-            </div>
-
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-              <a href="#features" className="hover:text-emerald-600 transition-colors">Tính năng</a>
-              <a href="#download" className="hover:text-emerald-600 transition-colors">Cách tải app</a>
-              <a href="#about" className="hover:text-emerald-600 transition-colors">Về chúng tôi</a>
-              <Link to="/faq" className="hover:text-emerald-600 transition-colors">FAQ</Link>
-            </nav>
-
-            {/* Header Login / Dashboard CTA */}
-            <div className="hidden md:flex items-center gap-4">
-              {isAuthenticated ? (
-                <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-all"
-                >
-                  Kênh quản trị
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <>
-                  <Link 
-                    to="/login"
-                    className="px-5 py-2.5 text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
-                  >
-                    Đăng nhập đối tác
-                  </Link>
-                  <button 
-                    onClick={() => {
-                      const element = document.getElementById('download');
-                      element?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl active:scale-[0.98] transition-all"
-                  >
-                    Tải App Ngay
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-100 bg-white/95 backdrop-blur-lg animate-in slide-in-from-top-4 duration-200">
-            <div className="px-4 pt-2 pb-6 space-y-3">
-              <a 
-                href="#features" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                Tính năng
-              </a>
-              <a 
-                href="#download" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                Cách tải app
-              </a>
-              <a 
-                href="#about" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                Về chúng tôi
-              </a>
-              <Link 
-                to="/faq" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                Hỗ trợ (FAQ)
-              </Link>
-              <hr className="border-slate-100 my-2" />
-              {isAuthenticated ? (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate('/dashboard');
-                  }}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl shadow-md"
-                >
-                  Kênh quản trị
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <div className="flex flex-col gap-2 pt-2">
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-3 text-center text-slate-700 font-semibold border border-slate-200 hover:bg-slate-50 rounded-xl transition-all"
-                  >
-                    Đăng nhập đối tác
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      const element = document.getElementById('download');
-                      element?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="w-full py-3 text-center bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all"
-                  >
-                    Tải App Ngay
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
+      <Header />
 
       {/* HERO SECTION */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden min-h-[100dvh] flex items-center bg-[#fafbfc]">
@@ -270,7 +144,7 @@ export default function Home() {
 
               
               {/* Phone Mockup */}
-              <div className="w-[260px] h-[560px] lg:w-[280px] lg:h-[600px] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-transform duration-700">
+              <div className="w-[260px] lg:w-[280px] aspect-[403/908] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10 -rotate-2 group-hover:rotate-0 transition-transform duration-700">
                 
                 {/* Volume / Power Buttons */}
                 <div className="absolute left-[-6px] top-28 w-[6px] h-10 bg-slate-900 rounded-l-md"></div>
@@ -373,10 +247,10 @@ export default function Home() {
             {/* Right: Phone Mockup (Checkin) */}
             <div className="relative flex justify-center lg:justify-end reveal reveal-delay-200 mt-12 lg:mt-0">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 lg:w-96 lg:h-96 bg-emerald-100/50 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000"></div>
-              <div className="w-[260px] h-[560px] lg:w-[280px] lg:h-[600px] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10">
+              <div className="w-[260px] lg:w-[280px] aspect-[425/789] bg-slate-950 rounded-[40px] lg:rounded-[48px] p-2 lg:p-3 shadow-2xl border-4 border-slate-900 ring-1 ring-slate-800 relative z-10">
                 {/* Screen */}
                 <div className="w-full h-full rounded-[32px] lg:rounded-[38px] overflow-hidden bg-white relative">
-                  <img src="/checkin.png" alt="Checkin Frame" className="w-full h-full object-cover object-[15%_top]" />
+                  <img src="/checkin.png" alt="Checkin Frame" className="w-full h-full object-cover object-top" />
                 </div>
               </div>
             </div>

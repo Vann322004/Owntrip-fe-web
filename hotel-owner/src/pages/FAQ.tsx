@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, MessageCircle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 type FAQItem = {
   question: string;
@@ -39,20 +40,7 @@ export default function FAQ() {
       <div className="absolute top-0 right-0 w-[60%] h-full bg-orange-50/40 -skew-x-12 transform origin-top -z-10 rounded-bl-[100px] animate-blob"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000"></div>
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/75 border-b border-slate-100/80 transition-all duration-300">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            <Link to="/" className="flex items-center gap-2 text-slate-600 hover:text-orange-600 font-semibold transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              Quay lại trang chủ
-            </Link>
-            <div className="text-xl font-black bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-              OwnTrip FAQ
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="text-center space-y-4 mb-16 animate-in slide-in-from-bottom-4 duration-700">
