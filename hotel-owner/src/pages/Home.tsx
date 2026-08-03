@@ -101,6 +101,9 @@ export default function Home() {
                   OwnTrip: <br/>
                   <span className="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-sm">Trợ lý du lịch thông minh.</span>
                 </h1>
+                <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent italic tracking-wide">
+                  "Ngẫu hứng từng bước chân - Độc bản từng dấu ấn"
+                </p>
                 <p className="text-lg text-slate-600 max-w-[45ch] leading-relaxed">
                   Bạn đã bao giờ tốn hàng giờ đồng hồ chỉ để tra cứu thông tin, đọc review ảo và đau đầu sắp xếp lịch trình? OwnTrip sinh ra để giải quyết tất cả.
                 </p>
