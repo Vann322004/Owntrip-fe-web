@@ -63,6 +63,9 @@ interface PaidCustomerReport {
   transactionCount: number;
   totalRevenue: number;
   transactions: PaidCustomerTransaction[];
+  actualPaidCustomerCount?: number;
+  actualTotalRevenue?: number;
+  reportAdjustment?: { customers: number; revenue: number };
 }
 
 const MONTH_LABELS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
@@ -475,8 +478,13 @@ export default function Dashboard() {
                 <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Lịch sử PayOS</span>
                 <h3 className="text-2xl font-bold text-gray-900 mt-1">Khách hàng trả phí</h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {paidCustomerReport?.paidCustomerCount ?? 0} user duy nhất · {paidCustomerReport?.transactionCount ?? 0} giao dịch thành công · tổng {formatVnd(paidCustomerReport?.totalRevenue ?? 0)}
+                  {paidCustomerReport?.paidCustomerCount ?? 0} user theo báo cáo · {paidCustomerReport?.transactionCount ?? 0} giao dịch thành công · tổng {formatVnd(paidCustomerReport?.totalRevenue ?? 0)}
                 </p>
+                {paidCustomerReport?.reportAdjustment && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    Đã gồm điều chỉnh báo cáo: +{paidCustomerReport.reportAdjustment.customers} người · +{formatVnd(paidCustomerReport.reportAdjustment.revenue)}. Dữ liệu PayOS thật: {paidCustomerReport.actualPaidCustomerCount} người · {formatVnd(paidCustomerReport.actualTotalRevenue ?? 0)}.
+                  </p>
+                )}
               </div>
               <button
                 type="button"
