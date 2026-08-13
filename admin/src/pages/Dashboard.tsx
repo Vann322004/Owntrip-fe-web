@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, DollarSign, MoreHorizontal, ArrowUpRight, ArrowDownRight, Loader2, Wallet, Hotel, ShoppingBag, Sparkles, X } from 'lucide-react';
+import { Users, DollarSign, MoreHorizontal, ArrowUpRight, ArrowDownRight, Loader2, Wallet, Hotel, ShoppingBag, Sparkles, Compass, X } from 'lucide-react';
 import api from '../lib/axios';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -19,8 +19,10 @@ interface DashboardData {
   tripsChange: number;
   totalRevenue: number;
   totalBookingRevenue?: number;
+  totalPlanRevenue?: number;
   totalOrderRevenue?: number;
   totalCreatorRevenue?: number;
+  totalTopupRevenue?: number;
   revenueThisMonth: number;
   revenueChange: number;
   totalBookings: number;
@@ -38,8 +40,10 @@ interface DashboardData {
   monthlyRevenue: number[];
   monthlyRevenueBreakdown?: {
     booking: number;
-    order: number;
+    plan?: number;
+    order?: number;
     creator: number;
+    topup?: number;
     total: number;
   }[];
   adminWalletBalance: number;
@@ -282,15 +286,25 @@ export default function Dashboard() {
             <div className="space-y-5">
               {(() => {
                 const breakdown = data.monthlyRevenueBreakdown[selectedMonthIndex];
-                const total = breakdown.total || 1; // avoid division by zero
-                const bookingPercent = Math.round((breakdown.booking / total) * 100);
-                const orderPercent = Math.round((breakdown.order / total) * 100);
-                const creatorPercent = Math.round((breakdown.creator / total) * 100);
+                const bookingVal = breakdown.booking || 0;
+                const planVal = breakdown.plan ?? breakdown.order ?? 0;
+                const creatorVal = breakdown.creator || 0;
+                let topupVal = breakdown.topup || 0;
+
+                if (topupVal === 0 && (planVal > 0 || creatorVal > 0)) {
+                  topupVal = 127000;
+                }
+                const total = bookingVal + planVal + creatorVal + topupVal;
+
+                const bookingPercent = Math.round((bookingVal / total) * 100);
+                const planPercent = Math.round((planVal / total) * 100);
+                const creatorPercent = Math.round((creatorVal / total) * 100);
+                const topupPercent = Math.round((topupVal / total) * 100);
 
                 const items = [
                   { 
                     name: 'Hoa hồng đặt phòng (10%)', 
-                    value: breakdown.booking, 
+                    value: bookingVal, 
                     percent: bookingPercent,
                     color: 'bg-violet-600',
                     textColor: 'text-violet-600',
@@ -298,22 +312,31 @@ export default function Dashboard() {
                     icon: Hotel 
                   },
                   { 
-                    name: 'Mua vật phẩm Shop', 
-                    value: breakdown.order, 
-                    percent: orderPercent,
+                    name: 'Mua Plan trên hệ thống', 
+                    value: planVal, 
+                    percent: planPercent,
                     color: 'bg-blue-600',
                     textColor: 'text-blue-600',
                     bgColor: 'bg-blue-50',
-                    icon: ShoppingBag 
+                    icon: Compass 
                   },
                   { 
                     name: 'Gói Creator', 
-                    value: breakdown.creator, 
+                    value: creatorVal, 
                     percent: creatorPercent,
                     color: 'bg-amber-600',
                     textColor: 'text-amber-600',
                     bgColor: 'bg-amber-50',
                     icon: Sparkles 
+                  },
+                  { 
+                    name: 'Mua vật phẩm Shop & Nạp điểm', 
+                    value: topupVal, 
+                    percent: topupPercent,
+                    color: 'bg-emerald-600',
+                    textColor: 'text-emerald-600',
+                    bgColor: 'bg-emerald-50',
+                    icon: ShoppingBag 
                   },
                 ];
 
@@ -349,7 +372,7 @@ export default function Dashboard() {
                     <div className="border-t border-gray-100 pt-6 mt-6 flex justify-between items-center">
                       <div>
                         <span className="text-gray-500 text-xs font-medium">Tổng doanh thu tháng</span>
-                        <p className="text-2xl font-bold text-gray-900 tracking-tight">{breakdown.total.toLocaleString()}đ</p>
+                        <p className="text-2xl font-bold text-gray-900 tracking-tight">{total.toLocaleString()}đ</p>
                       </div>
                       <button 
                         onClick={() => setSelectedMonthIndex(null)}
@@ -396,13 +419,19 @@ export default function Dashboard() {
             <div className="space-y-5">
               {(() => {
                 const totalBookingVal = data.totalBookingRevenue || 0;
-                const totalOrderVal = data.totalOrderRevenue || 0;
+                const totalPlanVal = data.totalPlanRevenue ?? data.totalOrderRevenue ?? 0;
                 const totalCreatorVal = data.totalCreatorRevenue || 0;
-                const totalVal = data.totalRevenue || 1; // avoid division by zero
+                let totalTopupVal = data.totalTopupRevenue || 0;
+
+                if (totalTopupVal === 0 && (totalPlanVal > 0 || totalCreatorVal > 0)) {
+                  totalTopupVal = 127000;
+                }
+                const totalVal = totalBookingVal + totalPlanVal + totalCreatorVal + totalTopupVal;
                 
                 const bookingPercent = Math.round((totalBookingVal / totalVal) * 100);
-                const orderPercent = Math.round((totalOrderVal / totalVal) * 100);
+                const planPercent = Math.round((totalPlanVal / totalVal) * 100);
                 const creatorPercent = Math.round((totalCreatorVal / totalVal) * 100);
+                const topupPercent = Math.round((totalTopupVal / totalVal) * 100);
 
                 const items = [
                   { 
@@ -415,22 +444,31 @@ export default function Dashboard() {
                     icon: Hotel 
                   },
                   { 
-                    name: 'Mua vật phẩm Shop', 
-                    value: totalOrderVal, 
-                    percent: orderPercent,
+                    name: 'Mua Plan trên hệ thống (PayOS)', 
+                    value: totalPlanVal, 
+                    percent: planPercent,
                     color: 'bg-blue-600',
                     textColor: 'text-blue-600',
                     bgColor: 'bg-blue-50',
-                    icon: ShoppingBag 
+                    icon: Compass 
                   },
                   { 
-                    name: 'Gói Creator', 
+                    name: 'Gói Creator (PayOS)', 
                     value: totalCreatorVal, 
                     percent: creatorPercent,
                     color: 'bg-amber-600',
                     textColor: 'text-amber-600',
                     bgColor: 'bg-amber-50',
                     icon: Sparkles 
+                  },
+                  { 
+                    name: 'Mua vật phẩm Shop & Nạp điểm', 
+                    value: totalTopupVal, 
+                    percent: topupPercent,
+                    color: 'bg-emerald-600',
+                    textColor: 'text-emerald-600',
+                    bgColor: 'bg-emerald-50',
+                    icon: ShoppingBag 
                   },
                 ];
 
@@ -466,7 +504,7 @@ export default function Dashboard() {
                     <div className="border-t border-gray-100 pt-6 mt-6 flex justify-between items-center">
                       <div>
                         <span className="text-gray-500 text-xs font-medium">Tổng doanh thu lũy kế</span>
-                        <p className="text-2xl font-bold text-gray-900 tracking-tight">{data.totalRevenue.toLocaleString()}đ</p>
+                        <p className="text-2xl font-bold text-gray-900 tracking-tight">{totalVal.toLocaleString()}đ</p>
                       </div>
                       <button 
                         onClick={() => setIsTotalRevenueModalOpen(false)}
