@@ -294,48 +294,34 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="bg-[#252525] rounded-3xl p-6 md:p-8 text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)]">
-          <div className="flex flex-wrap gap-3 mb-7">
-            {['Hôm qua', 'Hôm nay', 'Tuần này', 'Tháng này', 'Tháng trước', 'Năm nay', 'Năm trước'].map((period) => (
-              <button
-                key={period}
-                type="button"
-                className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${period === 'Tháng trước' ? 'border-emerald-400 bg-emerald-500 text-white' : 'border-gray-500 text-gray-100 hover:bg-gray-700'}`}
-              >
-                {period}
-              </button>
-            ))}
-            <button type="button" className="rounded-xl border border-gray-500 px-4 py-2 text-sm font-semibold text-gray-100 hover:bg-gray-700">Tùy chỉnh⌄</button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-            <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-400 p-6">
-              <p className="text-lg font-medium text-white/90">Tổng doanh thu tháng trước</p>
-              <p className="text-3xl font-black mt-5">{formatVnd(SLIDE_METRICS.revenue)}</p>
-              <p className="text-sm font-semibold text-emerald-100 mt-2">● Kênh OwnTrip</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+            <div className="flex justify-between items-center mb-5">
+              <div>
+                <h3 className="font-bold text-gray-900">Doanh thu & đơn hàng</h3>
+                <p className="text-xs text-gray-400 mt-1">Tổng hợp theo báo cáo tháng trước</p>
+              </div>
+              <p className="text-lg font-bold text-violet-600">{formatVnd(SLIDE_METRICS.revenue)}</p>
             </div>
-            <div className="rounded-2xl bg-emerald-50 p-6 text-gray-900">
-              <p className="text-lg font-medium">Tổng đơn hoàn thành tháng trước</p>
-              <p className="text-3xl font-black text-emerald-600 mt-5">32 đơn hàng</p>
-              <p className="text-sm font-semibold text-emerald-600 mt-2">● 100% theo báo cáo chiến dịch</p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Đã thanh toán', value: 32, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                { label: 'Đã hủy', value: 4, color: 'text-red-600', bg: 'bg-red-50' },
+                { label: 'Chờ thanh toán', value: 0, color: 'text-amber-600', bg: 'bg-amber-50' },
+              ].map((item) => (
+                <div key={item.label} className={`rounded-xl p-3 ${item.bg}`}>
+                  <p className={`text-xl font-bold ${item.color}`}>{item.value}</p>
+                  <p className="text-[11px] text-gray-500 mt-1">{item.label}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <div className="rounded-2xl border border-gray-600 bg-[#303030] p-5">
-              <h3 className="text-lg font-bold">Thu theo kênh thanh toán</h3>
-              <div className="mt-5 rounded-xl bg-[#414141] px-5 py-5 flex items-center justify-between">
-                <span className="text-gray-200">🌍 Kênh: <strong className="text-white">OwnTrip</strong></span>
-                <strong className="text-lg">{formatVnd(SLIDE_METRICS.revenue)}</strong>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-gray-600 bg-[#303030] p-5">
-              <h3 className="text-lg font-bold">Thống kê trạng thái đơn hàng</h3>
-              <div className="mt-5 grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-xl bg-emerald-600/30 p-4"><p className="text-2xl font-black text-emerald-300">32</p><p className="text-xs text-gray-200 mt-1">Đã thanh toán</p></div>
-                <div className="rounded-xl bg-gray-200/20 p-4"><p className="text-2xl font-black text-gray-100">4</p><p className="text-xs text-gray-200 mt-1">Đã hủy</p></div>
-                <div className="rounded-xl bg-white/20 p-4"><p className="text-2xl font-black text-gray-100">0</p><p className="text-xs text-gray-200 mt-1">Chờ thanh toán</p></div>
-              </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+            <h3 className="font-bold text-gray-900 mb-5">Thu theo kênh thanh toán</h3>
+            <div className="rounded-xl bg-gray-50 px-5 py-5 flex items-center justify-between">
+              <span className="text-gray-500">🌍 Kênh: <strong className="text-gray-900">OwnTrip</strong></span>
+              <strong className="text-lg text-gray-900">{formatVnd(SLIDE_METRICS.revenue)}</strong>
             </div>
           </div>
         </div>
