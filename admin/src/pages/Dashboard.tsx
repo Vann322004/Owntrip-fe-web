@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, DollarSign, MoreHorizontal, ArrowUpRight, ArrowDownRight, Loader2, Wallet, Hotel, ShoppingBag, Sparkles, X } from 'lucide-react';
+import { Users, DollarSign, MoreHorizontal, ArrowUpRight, ArrowDownRight, Loader2, Wallet, Hotel, ShoppingBag, Sparkles, X, Download, ReceiptText } from 'lucide-react';
 import api from '../lib/axios';
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -46,6 +46,40 @@ interface DashboardData {
 }
 
 const MONTH_LABELS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+
+const APP_DOWNLOADS = 56;
+const COST_PEOPLE = 29;
+const TOTAL_IMC_COST = 380_000;
+
+const SLIDE_METRICS = {
+  satisfaction: '4,3/5,0',
+  surveyResponses: 102,
+  payingCustomers: 35,
+  transactionsPerCustomer: '≈2',
+  revenue: 2_462_000,
+  paidOrders: 72,
+  pendingOrders: 40,
+  cancelledOrders: 4,
+  landingPageViews: 210,
+  uniqueLandingPageViews: 155,
+  conversionClicks: 53,
+  facebookEngagement: '137–162/bài',
+  contentBudget: 1_000_000,
+  contentSpend: 280_000,
+  adBudget: 500_000,
+  adSpend: 100_000,
+  toolsBudget: 400_000,
+  toolsSpend: 100_000,
+  otherSpend: 0,
+  plannedImcCost: '2,4–3,0 triệu VNĐ',
+  imcCost: TOTAL_IMC_COST,
+  roi: '547,89%',
+  grossProfit: 2_082_000,
+} as const;
+
+function formatVnd(value: number): string {
+  return `${value.toLocaleString('vi-VN')} VNĐ`;
+}
 
 function formatCurrency(value: number): string {
   if (value >= 1_000_000) {
@@ -165,6 +199,144 @@ export default function Dashboard() {
           );
         })}
       </div>
+
+      {/* Fixed campaign metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-xl bg-blue-100 text-blue-600">
+              <Download className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-gray-500 text-sm font-medium">Lượt tải app</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-1 tracking-tight">{APP_DOWNLOADS}</p>
+              <p className="text-xs text-gray-400 mt-1">Tổng số người đã tải ứng dụng</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-xl bg-emerald-100 text-emerald-600">
+              <ReceiptText className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-gray-500 text-sm font-medium">Chi phí IMC</h3>
+              <p className="text-3xl font-bold text-gray-900 mt-1 tracking-tight">
+                {TOTAL_IMC_COST.toLocaleString('vi-VN')} VNĐ
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Cho {COST_PEOPLE} người · khoảng {Math.round(TOTAL_IMC_COST / COST_PEOPLE).toLocaleString('vi-VN')} VNĐ/người
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide-aligned report metrics */}
+      <section className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Kết quả thực tế theo slide</h2>
+          <p className="text-sm text-gray-500 mt-1">Số liệu báo cáo được giữ riêng với dữ liệu live từ hệ thống.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'Khách hàng trả phí', value: SLIDE_METRICS.payingCustomers, detail: 'khách hàng thực tế' },
+            { label: 'Mức độ hài lòng', value: SLIDE_METRICS.satisfaction, detail: 'điểm trung bình' },
+            { label: 'Khảo sát xác thực', value: SLIDE_METRICS.surveyResponses, detail: 'phản hồi' },
+            { label: 'Giao dịch/khách trả phí', value: SLIDE_METRICS.transactionsPerCustomer, detail: 'giao dịch trung bình' },
+          ].map((metric) => (
+            <div key={metric.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+              <p className="text-xs font-semibold text-gray-500">{metric.label}</p>
+              <p className="text-2xl font-bold text-gray-900 mt-2">{metric.value}</p>
+              <p className="text-xs text-gray-400 mt-1">{metric.detail}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+            <div className="flex justify-between items-center mb-5">
+              <div>
+                <h3 className="font-bold text-gray-900">Doanh thu & đơn hàng</h3>
+                <p className="text-xs text-gray-400 mt-1">Order overview – OwnTrip payment system</p>
+              </div>
+              <p className="text-lg font-bold text-violet-600">{formatVnd(SLIDE_METRICS.revenue)}</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Đã thanh toán', value: SLIDE_METRICS.paidOrders, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                { label: 'Chờ thanh toán', value: SLIDE_METRICS.pendingOrders, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Đã hủy', value: SLIDE_METRICS.cancelledOrders, color: 'text-red-600', bg: 'bg-red-50' },
+              ].map((item) => (
+                <div key={item.label} className={`rounded-xl p-3 ${item.bg}`}>
+                  <p className={`text-xl font-bold ${item.color}`}>{item.value}</p>
+                  <p className="text-[11px] text-gray-500 mt-1">{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+            <h3 className="font-bold text-gray-900 mb-5">Xác thực thị trường</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-500">Landing Page</span>
+                <span className="font-semibold text-gray-900">{SLIDE_METRICS.landingPageViews} lượt xem ({SLIDE_METRICS.uniqueLandingPageViews} duy nhất)</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-500">Conversion clicks</span>
+                <span className="font-semibold text-gray-900">{SLIDE_METRICS.conversionClicks} lượt nhấp</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-500">Facebook engagement</span>
+                <span className="font-semibold text-gray-900">{SLIDE_METRICS.facebookEngagement}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)] overflow-x-auto">
+          <div className="flex justify-between items-center mb-5">
+            <div>
+              <h3 className="font-bold text-gray-900">Báo cáo tài chính</h3>
+              <p className="text-xs text-gray-400 mt-1">Đối chiếu ngân sách kế hoạch và chi phí thực tế</p>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold">ROI {SLIDE_METRICS.roi}</span>
+          </div>
+          <table className="w-full min-w-[560px] text-sm">
+            <thead>
+              <tr className="text-left text-xs text-gray-400 border-b border-gray-100">
+                <th className="pb-3 font-semibold">Hạng mục</th>
+                <th className="pb-3 font-semibold">Ngân sách</th>
+                <th className="pb-3 font-semibold">Thực chi</th>
+                <th className="pb-3 font-semibold">Tiết kiệm</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {[
+                ['Content Production', formatVnd(SLIDE_METRICS.contentBudget), formatVnd(SLIDE_METRICS.contentSpend), '72%'],
+                ['Advertisement (Ads)', formatVnd(SLIDE_METRICS.adBudget), formatVnd(SLIDE_METRICS.adSpend), '90%'],
+                ['Tools & Platforms', formatVnd(SLIDE_METRICS.toolsBudget), formatVnd(SLIDE_METRICS.toolsSpend), '90%'],
+                ['Other Expenses', '500.000–1.000.000 VNĐ', formatVnd(SLIDE_METRICS.otherSpend), '100%'],
+              ].map(([name, budget, spend, saving]) => (
+                <tr key={name}>
+                  <td className="py-3 font-medium text-gray-700">{name}</td>
+                  <td className="py-3 text-gray-500">{budget}</td>
+                  <td className="py-3 font-semibold text-gray-900">{spend}</td>
+                  <td className="py-3 font-semibold text-emerald-600">{saving}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-5 border-t border-gray-100">
+            <div><p className="text-xs text-gray-400">Tổng IMC kế hoạch</p><p className="font-bold text-gray-900 mt-1">{SLIDE_METRICS.plannedImcCost}</p></div>
+            <div><p className="text-xs text-gray-400">Tổng IMC thực tế</p><p className="font-bold text-emerald-600 mt-1">{formatVnd(SLIDE_METRICS.imcCost)}</p></div>
+            <div><p className="text-xs text-gray-400">Lợi nhuận gộp</p><p className="font-bold text-violet-600 mt-1">{formatVnd(SLIDE_METRICS.grossProfit)}</p></div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Revenue Chart */}
