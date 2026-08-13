@@ -45,6 +45,26 @@ interface DashboardData {
   adminWalletBalance: number;
 }
 
+interface PaidCustomerTransaction {
+  id: string;
+  userId: string;
+  displayName: string;
+  email: string;
+  type: 'Creator' | 'Plan';
+  itemName: string;
+  amount: number;
+  orderCode: number;
+  status: string;
+  createdAt: string;
+}
+
+interface PaidCustomerReport {
+  paidCustomerCount: number;
+  transactionCount: number;
+  totalRevenue: number;
+  transactions: PaidCustomerTransaction[];
+}
+
 const MONTH_LABELS = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
 
 const APP_DOWNLOADS = 56;
@@ -54,9 +74,9 @@ const TOTAL_IMC_COST = 380_000;
 const SLIDE_METRICS = {
   satisfaction: '4,3/5,0',
   surveyResponses: 102,
-  payingCustomers: 35,
+  payingCustomers: 29,
   transactionsPerCustomer: '≈2',
-  revenue: 2_462_000,
+  revenue: 2_128_000,
   paidOrders: 72,
   pendingOrders: 40,
   cancelledOrders: 4,
@@ -106,12 +126,20 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState<number | null>(null);
   const [isTotalRevenueModalOpen, setIsTotalRevenueModalOpen] = useState(false);
+  const [isPaidCustomerModalOpen, setIsPaidCustomerModalOpen] = useState(false);
+  const [paidCustomerReport, setPaidCustomerReport] = useState<PaidCustomerReport | null>(null);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await api.get('/system/dashboard-stats');
-        setData(response.data.data);
+        const dashboardResponse = await api.get('/system/dashboard-stats');
+        setData(dashboardResponse.data.data);
+        try {
+          const paidCustomersResponse = await api.get('/system/paid-customers');
+          setPaidCustomerReport(paidCustomersResponse.data.data);
+        } catch (paidCustomersError) {
+          console.warn('Paid customer history is not available yet', paidCustomersError);
+        }
       } catch (error) {
         console.error('Failed to fetch dashboard data', error);
       } finally {
@@ -242,16 +270,24 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Khách hàng trả phí', value: SLIDE_METRICS.payingCustomers, detail: 'khách hàng thực tế' },
+            { label: 'Khách hàng trả phí', value: paidCustomerReport?.paidCustomerCount ?? SLIDE_METRICS.payingCustomers, detail: 'user duy nhất · bấm để xem giao dịch' },
             { label: 'Mức độ hài lòng', value: SLIDE_METRICS.satisfaction, detail: 'điểm trung bình' },
             { label: 'Khảo sát xác thực', value: SLIDE_METRICS.surveyResponses, detail: 'phản hồi' },
             { label: 'Giao dịch/khách trả phí', value: SLIDE_METRICS.transactionsPerCustomer, detail: 'giao dịch trung bình' },
           ].map((metric) => (
-            <div key={metric.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]">
+            <button
+              key={metric.label}
+              type="button"
+              onClick={metric.label === 'Khách hàng trả phí' ? () => setIsPaidCustomerModalOpen(true) : undefined}
+              className={cn(
+                "text-left bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)]",
+                metric.label === 'Khách hàng trả phí' && "cursor-pointer hover:border-blue-200 hover:shadow-[0_8px_30px_rgba(37,99,235,0.10)] transition-all"
+              )}
+            >
               <p className="text-xs font-semibold text-gray-500">{metric.label}</p>
               <p className="text-2xl font-bold text-gray-900 mt-2">{metric.value}</p>
               <p className="text-xs text-gray-400 mt-1">{metric.detail}</p>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -423,6 +459,76 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Paid customer transaction history */}
+      {isPaidCustomerModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setIsPaidCustomerModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-3xl p-6 max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Lịch sử PayOS</span>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">Khách hàng trả phí</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {paidCustomerReport?.paidCustomerCount ?? 0} user duy nhất · {paidCustomerReport?.transactionCount ?? 0} giao dịch thành công · tổng {formatVnd(paidCustomerReport?.totalRevenue ?? 0)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPaidCustomerModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full text-gray-400"
+                aria-label="Đóng lịch sử giao dịch"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-auto max-h-[58vh] border border-gray-100 rounded-2xl">
+              <table className="w-full min-w-[760px] text-sm">
+                <thead className="sticky top-0 bg-gray-50 z-10">
+                  <tr className="text-left text-xs text-gray-500 border-b border-gray-100">
+                    <th className="px-4 py-3 font-semibold">Khách hàng</th>
+                    <th className="px-4 py-3 font-semibold">Mua gì</th>
+                    <th className="px-4 py-3 font-semibold">Loại</th>
+                    <th className="px-4 py-3 font-semibold">Mã PayOS</th>
+                    <th className="px-4 py-3 font-semibold">Số tiền</th>
+                    <th className="px-4 py-3 font-semibold">Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {(paidCustomerReport?.transactions ?? []).map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-gray-50/70">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-gray-900">{transaction.displayName}</p>
+                        <p className="text-xs text-gray-400">{transaction.email}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">{transaction.itemName}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${transaction.type === 'Creator' ? 'bg-violet-50 text-violet-700' : 'bg-blue-50 text-blue-700'}`}>
+                          {transaction.type}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-gray-500">#{transaction.orderCode}</td>
+                      <td className="px-4 py-3 font-bold text-gray-900">{formatVnd(transaction.amount)}</td>
+                      <td className="px-4 py-3 text-gray-500">{new Date(transaction.createdAt).toLocaleString('vi-VN')}</td>
+                    </tr>
+                  ))}
+                  {(paidCustomerReport?.transactions.length ?? 0) === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-gray-400">Chưa có giao dịch thành công.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Revenue Breakdown Modal */}
       {selectedMonthIndex !== null && data.monthlyRevenueBreakdown && data.monthlyRevenueBreakdown[selectedMonthIndex] && (
