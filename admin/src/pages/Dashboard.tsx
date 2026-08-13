@@ -50,7 +50,7 @@ interface PaidCustomerTransaction {
   userId: string;
   displayName: string;
   email: string;
-  type: 'Creator' | 'Plan';
+  type: 'Creator' | 'Plan' | 'Topup';
   itemName: string;
   amount: number;
   orderCode: number;
