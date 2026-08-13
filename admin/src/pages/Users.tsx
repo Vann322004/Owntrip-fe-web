@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, Edit2, Trash2, CheckCircle2, XCircle, Loader2, UserPlus, AlertTriangle } from 'lucide-react';
+import { 
+  Search, Edit2, Trash2, CheckCircle2, XCircle, Loader2, UserPlus, AlertTriangle, 
+  Users as UsersIcon, ShieldCheck, Sparkles, Building2, User as UserIcon, Filter, RotateCcw
+} from 'lucide-react';
 import api from '../lib/axios';
 
 interface User {
@@ -19,6 +22,8 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const [selectedVerification, setSelectedVerification] = useState<string>('all');
 
   // === Modal: Thêm mới ===
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -93,7 +98,6 @@ export default function Users() {
     try {
       const res = await api.put(`/users/${editingUser.userId}`, { displayName: editDisplayName, role: editRole });
       if (res.data?.success) {
-        // Cập nhật tại chỗ, không cần reload toàn bộ
         setUsers(prev => prev.map(u => u.userId === editingUser.userId ? { ...u, displayName: editDisplayName, role: editRole } : u));
         setIsEditModalOpen(false);
       }
@@ -127,17 +131,101 @@ export default function Users() {
     }
   };
 
-  const filteredUsers = users.filter(u =>
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (u.displayName && u.displayName.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // --- Tính toán thống kê theo vai trò ---
+  const roleCounts = {
+    total: users.length,
+    user: users.filter(u => u.role === 'user').length,
+    creator: users.filter(u => u.role === 'creator').length,
+    admin: users.filter(u => u.role === 'admin').length,
+    hotel_owner: users.filter(u => u.role === 'hotel_owner').length,
+  };
+
+  // --- Lọc người dùng ---
+  const filteredUsers = users.filter(u => {
+    const matchesSearch =
+      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.displayName && u.displayName.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesRole = selectedRole === 'all' || u.role === selectedRole;
+    const matchesVerification =
+      selectedVerification === 'all' ||
+      (selectedVerification === 'verified' && u.isVerified) ||
+      (selectedVerification === 'unverified' && !u.isVerified);
+
+    return matchesSearch && matchesRole && matchesVerification;
+  });
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedRole('all');
+    setSelectedVerification('all');
+  };
 
   const roleColors: Record<string, string> = {
-    admin: 'bg-indigo-100 text-indigo-700',
-    hotel_owner: 'bg-amber-100 text-amber-700',
-    user: 'bg-gray-100 text-gray-700',
-    creator: 'bg-amber-100 text-amber-700',
+    admin: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
+    hotel_owner: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    user: 'bg-gray-100 text-gray-700 border border-gray-200',
+    creator: 'bg-amber-100 text-amber-700 border border-amber-200',
   };
+
+  const roleLabels: Record<string, string> = {
+    admin: 'Admin',
+    hotel_owner: 'Hotel Owner',
+    user: 'User',
+    creator: 'Creator',
+  };
+
+  const statCards = [
+    {
+      id: 'all',
+      title: 'Tất cả tài khoản',
+      count: roleCounts.total,
+      icon: UsersIcon,
+      bgColor: 'bg-blue-500/10',
+      textColor: 'text-blue-600',
+      borderColor: 'hover:border-blue-300',
+      activeBorder: 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/50',
+    },
+    {
+      id: 'user',
+      title: 'Người dùng (User)',
+      count: roleCounts.user,
+      icon: UserIcon,
+      bgColor: 'bg-slate-500/10',
+      textColor: 'text-slate-600',
+      borderColor: 'hover:border-slate-300',
+      activeBorder: 'border-slate-500 ring-2 ring-slate-500/20 bg-slate-50/50',
+    },
+    {
+      id: 'creator',
+      title: 'Sáng tạo (Creator)',
+      count: roleCounts.creator,
+      icon: Sparkles,
+      bgColor: 'bg-amber-500/10',
+      textColor: 'text-amber-600',
+      borderColor: 'hover:border-amber-300',
+      activeBorder: 'border-amber-500 ring-2 ring-amber-500/20 bg-amber-50/50',
+    },
+    {
+      id: 'admin',
+      title: 'Quản trị viên (Admin)',
+      count: roleCounts.admin,
+      icon: ShieldCheck,
+      bgColor: 'bg-indigo-500/10',
+      textColor: 'text-indigo-600',
+      borderColor: 'hover:border-indigo-300',
+      activeBorder: 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/50',
+    },
+    {
+      id: 'hotel_owner',
+      title: 'Chủ khách sạn',
+      count: roleCounts.hotel_owner,
+      icon: Building2,
+      bgColor: 'bg-emerald-500/10',
+      textColor: 'text-emerald-600',
+      borderColor: 'hover:border-emerald-300',
+      activeBorder: 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/50',
+    },
+  ];
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -149,28 +237,110 @@ export default function Users() {
         </div>
         <button
           onClick={() => { setAddError(''); setIsAddModalOpen(true); }}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm transition-all shadow-lg shadow-blue-500/30"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm transition-all shadow-lg shadow-blue-500/30 active:scale-95"
         >
           <UserPlus className="w-4 h-4" />
           Thêm người dùng
         </button>
       </div>
 
+      {/* Role Summary Stat Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        {statCards.map((card) => {
+          const isActive = selectedRole === card.id;
+          return (
+            <div
+              key={card.id}
+              onClick={() => setSelectedRole(card.id)}
+              className={`p-4 rounded-2xl bg-white border border-gray-100 shadow-sm cursor-pointer transition-all duration-200 ${
+                isActive ? card.activeBorder : card.borderColor
+              } hover:shadow-md group`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-gray-500 group-hover:text-gray-900 transition-colors">
+                  {card.title}
+                </span>
+                <div className={`p-2 rounded-xl ${card.bgColor} ${card.textColor}`}>
+                  <card.icon className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-gray-900 tracking-tight">
+                  {loading ? '...' : card.count}
+                </span>
+                <span className="text-[11px] font-medium text-gray-400">tài khoản</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Table Card */}
       <div className="bg-white rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
-        {/* Toolbar */}
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4 bg-gray-50/50">
-          <div className="relative max-w-xs w-full group">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên, email..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
-            />
+        {/* Toolbar & Filters */}
+        <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-gray-50/50">
+          {/* Left: Search & Filter Controls */}
+          <div className="flex flex-wrap items-center gap-3 flex-1">
+            {/* Search Input */}
+            <div className="relative min-w-[220px] flex-1 max-w-sm group">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tên, email..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+              />
+            </div>
+
+            {/* Filter by Role */}
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm">
+              <Filter className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs text-gray-500 font-medium">Vai trò:</span>
+              <select
+                value={selectedRole}
+                onChange={e => setSelectedRole(e.target.value)}
+                className="bg-transparent text-sm font-semibold text-gray-800 outline-none cursor-pointer"
+              >
+                <option value="all">Tất cả ({roleCounts.total})</option>
+                <option value="user">User ({roleCounts.user})</option>
+                <option value="creator">Creator ({roleCounts.creator})</option>
+                <option value="admin">Admin ({roleCounts.admin})</option>
+                <option value="hotel_owner">Hotel Owner ({roleCounts.hotel_owner})</option>
+              </select>
+            </div>
+
+            {/* Filter by Verification */}
+            <div className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-xs text-gray-500 font-medium">Xác thực:</span>
+              <select
+                value={selectedVerification}
+                onChange={e => setSelectedVerification(e.target.value)}
+                className="bg-transparent text-sm font-semibold text-gray-800 outline-none cursor-pointer"
+              >
+                <option value="all">Tất cả</option>
+                <option value="verified">Đã xác minh</option>
+                <option value="unverified">Chưa xác minh</option>
+              </select>
+            </div>
+
+            {/* Reset Filter Button */}
+            {(searchTerm || selectedRole !== 'all' || selectedVerification !== 'all') && (
+              <button
+                onClick={resetFilters}
+                className="flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition-colors"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Đặt lại
+              </button>
+            )}
           </div>
-          <span className="text-sm text-gray-500 font-medium whitespace-nowrap">Tổng cộng: {filteredUsers.length}</span>
+
+          {/* Right: Counter */}
+          <div className="text-xs text-gray-500 font-medium whitespace-nowrap self-end md:self-auto">
+            Hiển thị <span className="font-bold text-gray-900">{filteredUsers.length}</span> / {users.length} tài khoản
+          </div>
         </div>
 
         {/* Table */}
@@ -214,7 +384,7 @@ export default function Users() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${roleColors[user.role] || roleColors.user}`}>
-                        {user.role}
+                        {roleLabels[user.role] || user.role}
                       </span>
                     </td>
                     <td className="px-6 py-4">

@@ -289,17 +289,13 @@ export default function Dashboard() {
                 const bookingVal = breakdown.booking || 0;
                 const planVal = breakdown.plan ?? breakdown.order ?? 0;
                 const creatorVal = breakdown.creator || 0;
-                let topupVal = breakdown.topup || 0;
+                const topupVal = breakdown.topup || 0;
+                const total = breakdown.total || (bookingVal + planVal + creatorVal + topupVal);
 
-                if (topupVal === 0 && (planVal > 0 || creatorVal > 0)) {
-                  topupVal = 127000;
-                }
-                const total = bookingVal + planVal + creatorVal + topupVal;
-
-                const bookingPercent = Math.round((bookingVal / total) * 100);
-                const planPercent = Math.round((planVal / total) * 100);
-                const creatorPercent = Math.round((creatorVal / total) * 100);
-                const topupPercent = Math.round((topupVal / total) * 100);
+                const bookingPercent = total > 0 ? Math.round((bookingVal / total) * 100) : 0;
+                const planPercent = total > 0 ? Math.round((planVal / total) * 100) : 0;
+                const creatorPercent = total > 0 ? Math.round((creatorVal / total) * 100) : 0;
+                const topupPercent = total > 0 ? Math.round((topupVal / total) * 100) : 0;
 
                 const items = [
                   { 
@@ -421,17 +417,13 @@ export default function Dashboard() {
                 const totalBookingVal = data.totalBookingRevenue || 0;
                 const totalPlanVal = data.totalPlanRevenue ?? data.totalOrderRevenue ?? 0;
                 const totalCreatorVal = data.totalCreatorRevenue || 0;
-                let totalTopupVal = data.totalTopupRevenue || 0;
-
-                if (totalTopupVal === 0 && (totalPlanVal > 0 || totalCreatorVal > 0)) {
-                  totalTopupVal = 127000;
-                }
-                const totalVal = totalBookingVal + totalPlanVal + totalCreatorVal + totalTopupVal;
+                const totalTopupVal = data.totalTopupRevenue || 0;
+                const totalVal = data.totalRevenue || (totalBookingVal + totalPlanVal + totalCreatorVal + totalTopupVal);
                 
-                const bookingPercent = Math.round((totalBookingVal / totalVal) * 100);
-                const planPercent = Math.round((totalPlanVal / totalVal) * 100);
-                const creatorPercent = Math.round((totalCreatorVal / totalVal) * 100);
-                const topupPercent = Math.round((totalTopupVal / totalVal) * 100);
+                const bookingPercent = totalVal > 0 ? Math.round((totalBookingVal / totalVal) * 100) : 0;
+                const planPercent = totalVal > 0 ? Math.round((totalPlanVal / totalVal) * 100) : 0;
+                const creatorPercent = totalVal > 0 ? Math.round((totalCreatorVal / totalVal) * 100) : 0;
+                const topupPercent = totalVal > 0 ? Math.round((totalTopupVal / totalVal) * 100) : 0;
 
                 const items = [
                   { 
