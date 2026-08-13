@@ -1,0 +1,9 @@
+{
+  "outputDirectory": "admin/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
