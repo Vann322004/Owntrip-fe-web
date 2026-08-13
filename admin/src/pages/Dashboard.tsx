@@ -306,8 +306,8 @@ export default function Dashboard() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: 'Đã thanh toán', value: 32, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                { label: 'Đã hủy', value: 4, color: 'text-red-600', bg: 'bg-red-50' },
-                { label: 'Chờ thanh toán', value: 0, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Đã hủy', value: 1, color: 'text-red-600', bg: 'bg-red-50' },
+                { label: 'Chờ thanh toán', value: 12, color: 'text-amber-600', bg: 'bg-amber-50' },
               ].map((item) => (
                 <div key={item.label} className={`rounded-xl p-3 ${item.bg}`}>
                   <p className={`text-xl font-bold ${item.color}`}>{item.value}</p>
