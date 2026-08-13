@@ -97,7 +97,7 @@ const SLIDE_METRICS = {
   plannedImcCost: '2,4–3,0 triệu VNĐ',
   imcCost: TOTAL_IMC_COST,
   roi: '547,89%',
-  grossProfit: 2_082_000,
+  grossProfit: 1_748_000,
 } as const;
 
 function formatVnd(value: number): string {
@@ -480,11 +480,6 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-500 mt-1">
                   {paidCustomerReport?.paidCustomerCount ?? 0} user theo báo cáo · {paidCustomerReport?.transactionCount ?? 0} giao dịch thành công · tổng {formatVnd(paidCustomerReport?.totalRevenue ?? 0)}
                 </p>
-                {paidCustomerReport?.reportAdjustment && (
-                  <p className="text-xs text-amber-600 mt-2">
-                    Đã gồm điều chỉnh báo cáo: +{paidCustomerReport.reportAdjustment.customers} người · +{formatVnd(paidCustomerReport.reportAdjustment.revenue)}. Dữ liệu PayOS thật: {paidCustomerReport.actualPaidCustomerCount} người · {formatVnd(paidCustomerReport.actualTotalRevenue ?? 0)}.
-                  </p>
-                )}
               </div>
               <button
                 type="button"
