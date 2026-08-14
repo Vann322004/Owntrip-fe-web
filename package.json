@@ -1,0 +1,7 @@
+{
+  "name": "owntrip-fe-web",
+  "private": true,
+  "scripts": {
+    "build": "cd admin && npm install && npm run build"
+  }
+}
